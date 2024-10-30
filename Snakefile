@@ -144,6 +144,22 @@ rule copy_non_split:
     shell:
         """mv {input.in_file} {output.out_file}"""
 
+rule ibb:
+    input:
+        # script = 'ibb/ropebwt',
+        source = 'data/{filename}'
+    output:
+        indicator = 'indicators/{filename}.ibb'
+    params:
+        threads = NUMBER_OF_PROCESSORS
+    benchmark: 'bench/{filename}.ibb.csv'
+    shell:
+        """if ibb/build/BA {input.source} 5; then
+        echo 1 > {output.indicator}
+        else
+        echo 0 > {output.indicator}
+        fi"""
+
 rule bcr:
     input:
         script = 'BCR_LCP_GSA/BCR_LCP_GSA',
@@ -328,7 +344,7 @@ rule divsufsort:
 
 rule build_ibb:
     output:
-        script = ''
+        script = 'ibb/build/BA'
     shell:
         """
         rm -rf ./ibb
