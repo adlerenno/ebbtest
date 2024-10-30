@@ -26,6 +26,7 @@ APPROACHES_SINGLE = [
     'divsufsort',
 ]
 APPROACHES_MULTI = [
+    'ibb',
     'bcr',
     'ropebwt',
     'ropebwt2'
