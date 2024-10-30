@@ -46,8 +46,12 @@ DATA_TYPE = {
     'divsufsort': 'fa',
 }
 DATA_SETS = [#'GRCh38', 'GRCm39', 'TAIR10', 'ASM584', 'R64', 'ASM19595', 'JAGHKL01'
-'SRR11092057', 'SRR062634',
+    'SRR11092057', 'SRR062634',
 ]
+DATA_TYPE_OF_DATA_SETS = {
+    'SRR11092057':'fq',
+    'SRR062634':'fq',
+}
 # R_VALUES = list(range(3, 6))
 
 FILES = [f'indicators/{file}.{DATA_TYPE[approach]}.{approach}'
@@ -78,7 +82,7 @@ rule get_results:
 
 rule stats:
     input:
-        set = [f'split/{filename}.fa' for filename in DATA_SETS]
+        set = [f'split/{filename}.{DATA_TYPE_OF_DATA_SETS[filename]}' for filename in DATA_SETS]
     output:
         stats = 'results/file_stats.csv'
     shell:
@@ -114,15 +118,16 @@ rule prepare_files:
 
 rule prepare_files_2:
     input:
-        in_file = 'split/{filename}.fa'
+        in_file = 'split/{filename}.fq'
     output:
         'data/{filename}.fq',
         'data/{filename}.fa.gz',
         'data/{filename}.fq.gz',
         'data/{filename}.owpl',
-        out_file = 'data/{filename}.fa'
+        out_file = 'data/{filename}.fa',
     shell:
         """python3 ./scripts/prepare_files.py {input.in_file} {output.out_file}"""
+
 
 rule partDNA:
     input:
@@ -616,25 +621,25 @@ rule fetch_ncbi_triticum_aestivum:  # https://www.ncbi.nlm.nih.gov/datasets/geno
 
 rule fetch_ncbi_SRR11092057:  # https://www.ncbi.nlm.nih.gov/sra/SRR11092057, https://www.ebi.ac.uk/ena/browser/view/SRR11092057
     output:
-        'source/SRR11092057.fa'
+        'source/SRR11092057.fq'
     shell:
         # wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR110/057/SRR11092057/SRR11092057_2.fastq.gz
         """
         cd source
         wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR110/057/SRR11092057/SRR11092057_1.fastq.gz
         gzip -d SRR11092057_1.fastq.gz
-        mv SRR11092057_1.fastq SRR11092057.fa
+        mv SRR11092057_1.fastq SRR11092057.fq
         """
 
 rule fetch_ncbi_SRR062634:  # https://www.ebi.ac.uk/ena/browser/view/SRR062634
     output:
-        'source/SRR062634.fa'
+        'source/SRR062634.fq'
     shell:
         """
         cd source
         wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR062/SRR062634/SRR062634_1.fastq.gz
         gzip -d SRR062634_1.fastq.gz
-        mv SRR062634_1.fastq SRR062634.fa
+        mv SRR062634_1.fastq SRR062634.fq
         """
 
 rule fetch_ncbi_sra:
