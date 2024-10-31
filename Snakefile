@@ -78,7 +78,7 @@ rule get_results:
         python3 scripts/collect_benchmarks.py bench {output.bench}
         """
         from scripts.collect_benchmarks import combine
-        combine(DATA_SETS, APPROACHES_SINGLE, DATA_TYPE, output.bench)
+        combine(DATA_SETS, APPROACHES, DATA_TYPE, output.bench)
 
 rule stats:
     input:
@@ -152,7 +152,7 @@ rule copy_non_split:
 
 rule ibb:
     input:
-        # script = 'ibb/ropebwt',
+        # script = 'ibb/build/ibb',
         source = 'data/{filename}'
     output:
         indicator = 'indicators/{filename}.ibb'
