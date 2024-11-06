@@ -57,11 +57,14 @@ DATA_SETS = [#'GRCh38', 'GRCm39', 'TAIR10', 'ASM584', 'R64', 'ASM19595', 'JAGHKL
 
 ]
 DATA_TYPE_OF_DATA_SETS = {
+    'SRR5816161':'fq',
     'SRR11092057':'fq',
     'SRR062634':'fq',
+    'influenza':'fq',
+    'UB118CR3':'fq',
+    'HGChr14':'fq',
     'pacbio_zymowastewater':'fq',
     'hprc_pangenome':'fa',
-    'SRR5816161':'fq',
 }
 # R_VALUES = list(range(3, 6))
 
