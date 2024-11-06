@@ -63,7 +63,7 @@ DATA_TYPE_OF_DATA_SETS = {
     'influenza':'fq',
     'UB118CR3':'fq',
     'HGChr14':'fq',
-    'pacbio_zymowastewater':'fq',
+    'zymowastewater':'fq',
     'hprc_pangenome':'fa',
 }
 # R_VALUES = list(range(3, 6))
