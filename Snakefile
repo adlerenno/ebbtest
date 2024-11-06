@@ -46,11 +46,22 @@ DATA_TYPE = {
     'divsufsort': 'fa',
 }
 DATA_SETS = [#'GRCh38', 'GRCm39', 'TAIR10', 'ASM584', 'R64', 'ASM19595', 'JAGHKL01'
-    'SRR11092057', 'SRR062634',
+#    'hprc_pangenome',
+    'SRR5816161',
+    'SRR11092057',
+    'SRR062634',
+    'influenza',
+    'UB118CR3',
+    'HGChr14',
+    'zymowastewater',
+
 ]
 DATA_TYPE_OF_DATA_SETS = {
     'SRR11092057':'fq',
     'SRR062634':'fq',
+    'pacbio_zymowastewater':'fq',
+    'hprc_pangenome':'fa',
+    'SRR5816161':'fq',
 }
 # R_VALUES = list(range(3, 6))
 
@@ -194,7 +205,11 @@ rule ropebwt:
     benchmark: 'bench/{filename}.ropebwt.csv'
     shell:
         """if {input.script} -t -R -o data_bwt/ropebwt/{wildcards.filename} {input.source}; then
-        echo 1 > {output.indicator}
+            if test -f data_bwt/ropebwt/{wildcards.filename}; then
+                echo 1 > {output.indicator}
+            else
+                echo 0 > {output.indicator}
+            fi
         else
         echo 0 > {output.indicator}
         fi"""
@@ -531,16 +546,7 @@ rule build_part_dna:
         make
         """
 
-rule build_sra_toolkit:
-    output:
-        'sratoolkit.3.0.0-mac64/bin/fasterq-dump',
-        'sratoolkit.3.0.0-mac64/bin/prefetch'
-    shell:
-        """
-        rm -rf ./sratoolkit.3.0.0-mac64
-        wget --output-document sratoolkit.tar.gz https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-centos_linux64.tar.gz
-        tar -vxzf sratoolkit.tar.gz
-        """
+#################### SINGLE-WORDS ######################################
 
 rule fetch_ncbi_human_GRCh38:  # https://www.ncbi.nlm.nih.gov/assembly/GCF_000001405.40/
     output:
@@ -619,6 +625,9 @@ rule fetch_ncbi_triticum_aestivum:  # https://www.ncbi.nlm.nih.gov/datasets/geno
         python3 ./../scripts/convert_grc_long.py GCF_018294505.1_IWGSC_CS_RefSeq_v2.1_genomic.fna JAGHKL01.fa
         """
 
+##################### MULTI-WORDS ##########################
+
+
 rule fetch_ncbi_SRR11092057:  # https://www.ncbi.nlm.nih.gov/sra/SRR11092057, https://www.ebi.ac.uk/ena/browser/view/SRR11092057
     output:
         'source/SRR11092057.fq'
@@ -642,15 +651,123 @@ rule fetch_ncbi_SRR062634:  # https://www.ebi.ac.uk/ena/browser/view/SRR062634
         mv SRR062634_1.fastq SRR062634.fq
         """
 
+rule fetch_ncbi_influenza:
+    output:
+        'source/influenza.fq'
+    shell:
+        """
+        cd source
+        wget https://ftp.ncbi.nih.gov/genomes/INFLUENZA/influenza.fna.gz
+        gzip -d influenza.fna.gz
+        mv influenza.fna influenza.fq
+        """
+
+rule fetch_ncbi_UB118CR3:
+    output:
+        'source/UB118CR3.fq'
+    shell :
+        """
+        cd source
+        wget http://ftp.sra.ebi.ac.uk/vol1/run/ERR194/ERR1942989/UB118CR3_HWN5KCCXX_L4_2.clean.fq.gz
+        gzip -d UB118CR3_HWN5KCCXX_L4_2.clean.fq.gz
+        mv UB118CR3_HWN5KCCXX_L4_2.clean.fq UB118CR3.fq
+        """
+
+
+"""Avg Read length: 101bp
+Insert length: 155bp
+# of reads: 36,504,800"""
+"https://gage.cbcb.umd.edu/data/Hg_chr14/Data.original/frag_1.fastq.gz"
+"https://gage.cbcb.umd.edu/data/Hg_chr14/Data.original/frag_2.fastq.gz"
+rule fetch_gage_HGChr14:
+    output:
+        'source/HGChr14.fq'
+    shell :
+        """
+        cd source
+        wget https://gage.cbcb.umd.edu/data/Hg_chr14/Data.original/frag_1.fastq.gz
+        gzip -d frag_1.fastq.gz
+        mv frag_1.fastq HGChr14.fq
+        """
+
+rule fetch_pacbio_wastewater:
+    output:
+        'source/zymowastewater.fq'
+    shell:
+        """
+        cd source
+        wget https://downloads.pacbcloud.com/public/dataset/Onso/Zymo_wastewater/fastqs/Raw_influent_L01_R2_Sample_Library.fastq.gz
+        gzip -d Raw_influent_L01_R2_Sample_Library.fastq.gz
+        mv Raw_influent_L01_R2_Sample_Library.fastq zymowastewater.fq
+        """
+
+
+################## OTHER ####################
+
+rule fetch_ncbi_SRR5816161:  # Uses ncbi_sra to download.
+    input:
+        'source/SRR5816161.fastq'
+    output:
+        'source/SRR5816161.fq'
+    shell:
+        """
+        mv source/SRR5816161.fastq source/SRR5816161.fq
+        """
+
+rule fetch_pangenome:
+    input:
+        '/usr/local/bin/datasets',
+        '/usr/local/bin/dataformat'
+    output:
+        'hprc_pangenome.fa'
+    shell:
+        """
+        set -e
+        cd source
+        datasets download genome accession PRJEB33226 --include genome --filename hprc_dataset.zip
+        unzip hprc_dataset.zip -d hprc_data
+        datasets rehydrate --directory hprc_data/
+        cd hprc_data/ncbi_dataset/data
+        # Combine all FASTA files into a single file
+        cat *.fna > hprc_pangenome.fna
+        mv hprc_pangenome.fna ../../../hprc_pangenome.fa
+        rm -r hprc_data/
+        """
+
+###################### Download Tools ############################
+
+rule build_sra_toolkit:
+    output:
+        'sratoolkit.3.0.0-mac64/bin/fasterq-dump',
+        'sratoolkit.3.0.0-mac64/bin/prefetch'
+    shell:
+        """
+        rm -rf ./sratoolkit.3.0.0-mac64
+        wget --output-document sratoolkit.tar.gz https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-centos_linux64.tar.gz
+        tar -vxzf sratoolkit.tar.gz
+        """
+
 rule fetch_ncbi_sra:
     input:
         script_prefetch='sratoolkit.3.0.0-mac64/bin/prefetch',
         script_fastq='sratoolkit.3.0.0-mac64/bin/fasterq-dump'
     output:
-        'source/{filename}.fq'
+        'source/{filename}.fastq'
     shell:
         """
         {input.script_prefetch} {wildcards.filename}
         {input.script_fastq} --concatenate-reads --outdir ./source/ {wildcards.filename}
-        python3 ./../scripts/convert_grc_long.py {wildcards.filename}.fastq {wildcards.filename}.fq
+        """
+
+rule fetch_ncbi_datatools:
+    output:
+        '/usr/local/bin/datasets',
+        '/usr/local/bin/dataformat'
+    shell:
+        """
+        # Download and install NCBI Datasets command-line tools
+        wget https://ftp.ncbi.nlm.nih.gov/pub/datasets/command-line/v2/linux-amd64/datasets
+        wget https://ftp.ncbi.nlm.nih.gov/pub/datasets/command-line/v2/linux-amd64/dataformat
+        chmod +x datasets dataformat
+        sudo mv datasets dataformat /usr/local/bin/
         """
