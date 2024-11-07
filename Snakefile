@@ -739,15 +739,16 @@ rule fetch_pangenome:
 
 ###################### Download Tools ############################
 
-rule build_sra_toolkit:
+rule build_sra_toolkit:  # TODO: Make more general, currently works with exact version number.
     output:
-        'sratoolkit.3.0.0-mac64/bin/fasterq-dump',
-        'sratoolkit.3.0.0-mac64/bin/prefetch'
+        'sratoolkit/bin/fasterq-dump',
+        'sratoolkit/bin/prefetch'
     shell:
         """
         rm -rf ./sratoolkit.3.0.0-mac64
         wget --output-document sratoolkit.tar.gz https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-centos_linux64.tar.gz
         tar -vxzf sratoolkit.tar.gz
+        mv sratoolkit.3.1.1-centos_linux64 sratoolkit
         """
 
 rule fetch_ncbi_sra:
