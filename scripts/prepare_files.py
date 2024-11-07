@@ -97,4 +97,4 @@ if __name__ == '__main__':
             sys.argv[2] = sys.argv[2].replace('.fa', '')
         if '.gz' in sys.argv[2]:
             sys.argv[2] = sys.argv[2].replace('.gz', '')
-        prepare_files(sys.argv[1], True, sys.argv[2])
+        prepare_files(sys.argv[1], sys.argv[2])
