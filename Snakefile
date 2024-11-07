@@ -753,8 +753,8 @@ rule build_sra_toolkit:  # TODO: Make more general, currently works with exact v
 
 rule fetch_ncbi_sra:
     input:
-        script_prefetch='sratoolkit.3.0.0-mac64/bin/prefetch',
-        script_fastq='sratoolkit.3.0.0-mac64/bin/fasterq-dump'
+        script_prefetch='sratoolkit/bin/prefetch',
+        script_fastq='sratoolkit/bin/fasterq-dump'
     output:
         'source/{filename}.fastq'
     shell:
