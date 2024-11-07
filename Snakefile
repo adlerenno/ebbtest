@@ -741,8 +741,8 @@ rule fetch_pangenome:
 
 rule build_sra_toolkit:  # TODO: Make more general, currently works with exact version number.
     output:
-        'sratoolkit/bin/fasterq-dump',
-        'sratoolkit/bin/prefetch'
+        'sratoolkit/sratoolkit.current-centos_linux64/bin/fasterq-dump',
+        'sratoolkit/sratoolkit.current-centos_linux64/bin/prefetch'
     shell:
         """
         rm -rf ./sratoolkit.3.0.0-mac64
@@ -753,8 +753,8 @@ rule build_sra_toolkit:  # TODO: Make more general, currently works with exact v
 
 rule fetch_ncbi_sra:
     input:
-        script_prefetch='sratoolkit/bin/prefetch',
-        script_fastq='sratoolkit/bin/fasterq-dump'
+        script_prefetch='sratoolkit/sratoolkit.current-centos_linux64/bin/prefetch',
+        script_fastq='sratoolkit/sratoolkit.current-centos_linux64/bin/fasterq-dump'
     output:
         'source/{filename}.fastq'
     shell:
