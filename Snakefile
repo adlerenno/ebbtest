@@ -47,7 +47,7 @@ DATA_TYPE = {
 }
 DATA_SETS = [#'GRCh38', 'GRCm39', 'TAIR10', 'ASM584', 'R64', 'ASM19595', 'JAGHKL01'
 #    'hprc_pangenome',
-    'SRR5816161',
+#    'SRR5816161',
     'SRR11092057',
     'SRR062634',
     'influenza',

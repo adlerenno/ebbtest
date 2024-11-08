@@ -51,6 +51,7 @@ def prepare_files(file: str, output_basename: str):
                                     for length in line_lengths:
                                         output_fastq.write(':' * length + '\n')
                                     line_lengths.clear()
+                                    output_owpl.write('\n')
                                 output_fastq.write(f'@{line[1:]}')
                                 sequence_number += 1
                                 status = 1
@@ -58,9 +59,10 @@ def prepare_files(file: str, output_basename: str):
                                 status = 2
                             elif status == 1:
                                 line = ''.join(filter(lambda x: x in {'A', 'C', 'G', 'T'}, line.upper()))
-                                assert len(line) > 0
+                                if len(line) == 0:
+                                    continue
 
-                                output_owpl.write(line + '\n')
+                                output_owpl.write(line)
 
                                 output_fasta.write(line + '\n')
 
@@ -72,6 +74,7 @@ def prepare_files(file: str, output_basename: str):
                             for length in line_lengths:
                                 output_fastq.write(':' * length + '\n')
                             line_lengths.clear()
+                            output_owpl.write('\n')
                         output_owpl.flush()
                         output_fasta.flush()
                         output_fastq.flush()
