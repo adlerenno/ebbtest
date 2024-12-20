@@ -33,7 +33,6 @@ APPROACHES_MULTI = [
 ]
 APPROACHES = APPROACHES_MULTI + APPROACHES_SINGLE
 DATA_TYPE = {
-    'ibb': 'fa',
     'bcr': 'fq.gz',
     'ropebwt': 'fq.gz',
     'ropebwt2': 'fq.gz',
@@ -44,8 +43,18 @@ DATA_TYPE = {
     'egap': 'fa',
     'gsufsort': 'fq.gz',
     'divsufsort': 'fa',
+    'ibb': 'fa',
+    'partdna': 'fa'
 }
-DATA_SETS = [#'GRCh38', 'GRCm39', 'TAIR10', 'ASM584', 'R64', 'ASM19595', 'JAGHKL01'
+DATA_SETS_SPLIT = [
+    'GRCh38',
+    'GRCm39',
+    'TAIR10',
+    'ASM584',
+    'R64',
+    'ASM19595',
+    'JAGHKL01']
+DATA_SETS = [
 #    'hprc_pangenome',
 #    'SRR5816161',
     'SRR11092057',
@@ -54,23 +63,36 @@ DATA_SETS = [#'GRCh38', 'GRCm39', 'TAIR10', 'ASM584', 'R64', 'ASM19595', 'JAGHKL
     'UB118CR3',
     'HGChr14',
     'zymowastewater',
-
 ]
 DATA_TYPE_OF_DATA_SETS = {
-    'SRR5816161':'fq',
-    'SRR11092057':'fq',
-    'SRR062634':'fq',
-    'influenza':'fq',
-    'UB118CR3':'fq',
-    'HGChr14':'fq',
-    'zymowastewater':'fq',
+    'SRR5816161':'fa',
+    'SRR11092057':'fa',
+    'SRR062634':'fa',
+    'influenza':'fa',
+    'UB118CR3':'fa',
+    'HGChr14':'fa',
+    'zymowastewater':'fa',
     'hprc_pangenome':'fa',
+    'GRCh38':'fa',
+    'GRCm39':'fa',
+    'TAIR10':'fa',
+    'ASM584':'fa',
+    'R64':'fa',
+    'ASM19595':'fa',
+    'JAGHKL01':'fa'
 }
-# R_VALUES = list(range(3, 6))
+R_VALUES = list(range(3, 6))
 
 FILES = [f'indicators/{file}.{DATA_TYPE[approach]}.{approach}'
          for approach in APPROACHES
          for file in DATA_SETS
+         ] + [f'indicators/{file}.{DATA_TYPE[approach]}.{approach}'
+         for approach in APPROACHES
+         for file in DATA_SETS_SPLIT
+         ] + [f'indicators/{file}_split_{r}.{DATA_TYPE[approach]}.{approach}'
+         for approach in APPROACHES
+         for file in DATA_SETS_SPLIT
+         for r in R_VALUES
          ]
 
 # Necessary to create directories because output files of bwt construction are not named in snakemake file.
@@ -96,7 +118,7 @@ rule get_results:
 
 rule stats:
     input:
-        set = [f'split/{filename}.{DATA_TYPE_OF_DATA_SETS[filename]}' for filename in DATA_SETS]
+        set = [f'split/{filename}.{DATA_TYPE_OF_DATA_SETS[filename]}' for filename in DATA_SETS + DATA_SETS_SPLIT]
     output:
         stats = 'results/file_stats.csv'
     shell:
@@ -105,7 +127,7 @@ rule stats:
         """
 
 
-rule clean:  # TODO: Clear installations and build repositories.
+rule clean:
     shell:
         """
         rm -rf ./bench
@@ -132,7 +154,7 @@ rule prepare_files:
 
 rule prepare_files_2:
     input:
-        in_file = 'split/{filename}.fq'
+        in_file = 'split/{filename}.fa'
     output:
         'data/{filename}.fq',
         'data/{filename}.fa.gz',
@@ -149,8 +171,8 @@ rule partDNA:
         in_file = "source/{filename}"
     output:
         out_file = "split/{filename}_split_{r}"
-    benchmark:
-        "bench/{filename}_{r}.partdna.csv"
+    #benchmark:
+    #    "bench/{filename}_{r}.partdna.csv"
     shell:
         """
         {input.script} -i {input.in_file} -o {output.out_file} -r {wildcards.r} -p single
@@ -166,15 +188,17 @@ rule copy_non_split:
 
 rule ibb:
     input:
-        # script = 'ibb/build/ibb',
+        script = 'ibb/build/IBB-cli',
         source = 'data/{filename}'
     output:
         indicator = 'indicators/{filename}.ibb'
     params:
-        threads = NUMBER_OF_PROCESSORS
+        threads = NUMBER_OF_PROCESSORS,
+        k = 5,
+        tempdir = 'tmp/'
     benchmark: 'bench/{filename}.ibb.csv'
     shell:
-        """if ibb/build/BA {input.source} 5; then
+        """if {input.script} -i {input.source} -o data_bwt/ibb/{wildcards.filename} -t {params.tempdir} -k {params.k} -p {params.threads}; then 
         echo 1 > {output.indicator}
         else
         echo 0 > {output.indicator}
@@ -368,7 +392,7 @@ rule divsufsort:
 
 rule build_ibb:
     output:
-        script = 'ibb/build/BA'
+        script = 'ibb/build/IBB-cli'
     shell:
         """
         rm -rf ./ibb
@@ -376,7 +400,7 @@ rule build_ibb:
         cd ibb
         mkdir -p build
         cd build
-        cmake ..
+        cmake -DPOP_COUNT=AVX512 ..
         make
         """
 
@@ -633,47 +657,47 @@ rule fetch_ncbi_triticum_aestivum:  # https://www.ncbi.nlm.nih.gov/datasets/geno
 
 rule fetch_ncbi_SRR11092057:  # https://www.ncbi.nlm.nih.gov/sra/SRR11092057, https://www.ebi.ac.uk/ena/browser/view/SRR11092057
     output:
-        'source/SRR11092057.fq'
+        'source/SRR11092057.fa'
     shell:
         # wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR110/057/SRR11092057/SRR11092057_2.fastq.gz
         """
         cd source
         wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR110/057/SRR11092057/SRR11092057_1.fastq.gz
         gzip -d SRR11092057_1.fastq.gz
-        mv SRR11092057_1.fastq SRR11092057.fq
+        mv SRR11092057_1.fastq SRR11092057.fa
         """
 
 rule fetch_ncbi_SRR062634:  # https://www.ebi.ac.uk/ena/browser/view/SRR062634
     output:
-        'source/SRR062634.fq'
+        'source/SRR062634.fa'
     shell:
         """
         cd source
         wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR062/SRR062634/SRR062634_1.fastq.gz
         gzip -d SRR062634_1.fastq.gz
-        mv SRR062634_1.fastq SRR062634.fq
+        mv SRR062634_1.fastq SRR062634.fa
         """
 
 rule fetch_ncbi_influenza:
     output:
-        'source/influenza.fq'
+        'source/influenza.fa'
     shell:
         """
         cd source
         wget https://ftp.ncbi.nih.gov/genomes/INFLUENZA/influenza.fna.gz
         gzip -d influenza.fna.gz
-        mv influenza.fna influenza.fq
+        mv influenza.fna influenza.fa
         """
 
 rule fetch_ncbi_UB118CR3:
     output:
-        'source/UB118CR3.fq'
+        'source/UB118CR3.fa'
     shell :
         """
         cd source
         wget http://ftp.sra.ebi.ac.uk/vol1/run/ERR194/ERR1942989/UB118CR3_HWN5KCCXX_L4_2.clean.fq.gz
         gzip -d UB118CR3_HWN5KCCXX_L4_2.clean.fq.gz
-        mv UB118CR3_HWN5KCCXX_L4_2.clean.fq UB118CR3.fq
+        mv UB118CR3_HWN5KCCXX_L4_2.clean.fq UB118CR3.fa
         """
 
 
@@ -684,24 +708,24 @@ Insert length: 155bp
 "https://gage.cbcb.umd.edu/data/Hg_chr14/Data.original/frag_2.fastq.gz"
 rule fetch_gage_HGChr14:
     output:
-        'source/HGChr14.fq'
+        'source/HGChr14.fa'
     shell :
         """
         cd source
         wget https://gage.cbcb.umd.edu/data/Hg_chr14/Data.original/frag_1.fastq.gz
         gzip -d frag_1.fastq.gz
-        mv frag_1.fastq HGChr14.fq
+        mv frag_1.fastq HGChr14.fa
         """
 
 rule fetch_pacbio_wastewater:
     output:
-        'source/zymowastewater.fq'
+        'source/zymowastewater.fa'
     shell:
         """
         cd source
         wget https://downloads.pacbcloud.com/public/dataset/Onso/Zymo_wastewater/fastqs/Raw_influent_L01_R2_Sample_Library.fastq.gz
         gzip -d Raw_influent_L01_R2_Sample_Library.fastq.gz
-        mv Raw_influent_L01_R2_Sample_Library.fastq zymowastewater.fq
+        mv Raw_influent_L01_R2_Sample_Library.fastq zymowastewater.fa
         """
 
 
@@ -711,10 +735,10 @@ rule fetch_ncbi_SRR5816161:  # Uses ncbi_sra to download.
     input:
         'source/SRR5816161.fastq'
     output:
-        'source/SRR5816161.fq'
+        'source/SRR5816161.fa'
     shell:
         """
-        mv source/SRR5816161.fastq source/SRR5816161.fq
+        mv source/SRR5816161.fastq source/SRR5816161.fa
         """
 
 rule fetch_pangenome:
