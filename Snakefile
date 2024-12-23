@@ -167,7 +167,7 @@ rule prepare_files_2:
 
 rule partDNA:
     input:
-        script = "partDNA/build/exc",
+        script = "partDNA/build/partDNA",
         in_file = "source/{filename}"
     output:
         out_file = "split/{filename}_split_{r}"
@@ -553,7 +553,7 @@ rule build_divsufsort:
 
 rule build_part_dna:
     output:
-        script = "partDNA/build/exc"
+        script = "partDNA/build/partDNA"
     shell:
         """
         rm -rf ./partDNA
