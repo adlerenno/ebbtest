@@ -39,7 +39,7 @@ def get_success_indicator(filename):
         # raise FileNotFoundError(f'File indicators/{filename}.{file_extension}.{approach} not found.')
 
 
-def combine(data_sets, approaches, DATA_TYPE, out_file):
+def combine(data_sets, data_sets_split, r_values, approaches, DATA_TYPE, out_file):
     with open(out_file, "w") as f:
         writer = csv.writer(f, delimiter="\t")
         writer.writerow(['algorithm', 'dataset', 'r', 'successful', 's', 'h:m:s', 'max_rss', 'max_vms', 'max_uss', 'max_pss', 'io_in', 'io_out', 'mean_load', 'cpu_time'])
@@ -54,3 +54,16 @@ def combine(data_sets, approaches, DATA_TYPE, out_file):
                     next(reader)  # Headers line
                     success = get_success_indicator(indicator)
                     writer.writerow([approach, data_set, '0', success] + next(reader))
+        for r in r_values:
+            for data_set in data_sets_split:
+                for approach in approaches:
+                    bench = f'bench/{data_set}_split_{r}.{DATA_TYPE[approach]}.{approach}.csv'
+                    indicator = f'indicators/{data_set}_split_{r}.{DATA_TYPE[approach]}.{approach}'
+                    if not isfile(bench):
+                        continue
+                    with open(bench, 'r') as g:
+                        reader = csv.reader(g, delimiter="\t")
+                        next(reader)  # Headers line
+                        success = get_success_indicator(indicator)
+                        writer.writerow([approach, data_set, f'{r}', success] + next(reader))
+

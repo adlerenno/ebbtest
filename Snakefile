@@ -114,7 +114,7 @@ rule get_results:
         python3 scripts/collect_benchmarks.py bench {output.bench}
         """
         from scripts.collect_benchmarks import combine
-        combine(DATA_SETS, APPROACHES, DATA_TYPE, output.bench)
+        combine(DATA_SETS + DATA_SETS_SPLIT, DATA_SETS_SPLIT, R_VALUES, APPROACHES, DATA_TYPE, output.bench)
 
 rule stats:
     input:
