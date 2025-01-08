@@ -23,10 +23,12 @@ def file_stats(output_file, input_file_list):
                     if line.startswith('>') or line.startswith('@'):
                         state = 0
                         max_sequence_length = max(max_sequence_length, current_sequence_length)
+                        current_sequence_length = 0
                         sequence_count += 1
                     elif line.startswith('+'):
                         state = 1
                         max_sequence_length = max(max_sequence_length, current_sequence_length)
+                        current_sequence_length = 0
                     elif state == 0:
                         current_sequence_length += len(line) - 1
                         for char in line:
