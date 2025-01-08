@@ -106,7 +106,7 @@ rule target:
     input:
         bench = 'results/benchmark.csv',
         stats = 'results/file_stats.csv',
-        length_distribution = 'results/length_distribution_GRCh38'
+        length_distribution = 'results/length_distribution_GRCh38.csv'
 
 rule get_results:
     input:
@@ -135,7 +135,7 @@ rule length_distribution:
     input:
         file = 'split/GRCh38.fa_split_4'
     output:
-        length_distribution = 'results/length_distribution_GRCh38'
+        length_distribution = 'results/length_distribution_GRCh38.csv'
     run:
         from scripts.get_file_stats import length_distribution
         length_distribution(output.length_distribution, input.file)
