@@ -53,7 +53,7 @@ def length_distribution(output_file, input_file):
             for line in file:
                 if line.startswith('>') or line.startswith('@'):
                     state = 0
-                    length[current_sequence_length/100] += 1
+                    length[current_sequence_length // 100] += 1
                     current_sequence_length = 0
                 elif line.startswith('+'):
                     state = 1
