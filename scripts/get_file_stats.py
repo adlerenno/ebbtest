@@ -4,7 +4,7 @@ import sys
 
 def file_stats(output_file, input_file_list):
 
-    with open(output_file, 'w') as out:
+    with (open(output_file, 'w') as out):
         writer = csv.writer(out, delimiter="\t")
         writer.writerow(['dataset', 'sequence_count', 'max_sequence_length', 'symbol_count', 'A', 'C', 'G', 'T'])
         for file in input_file_list:
@@ -14,14 +14,20 @@ def file_stats(output_file, input_file_list):
             count_g = 0
             count_t = 0
             max_sequence_length = 0
+            current_sequence_length = 0
+            state = -1
             with open(file, 'r') as f:
                 print(f"Analysing file {file}")
                 for line in f:
-                    if line.startswith('>'):
+                    if line.startswith('>') or line.startswith('@'):
+                        state = 0
+                        max_sequence_length = max(max_sequence_length, current_sequence_length)
                         sequence_count += 1
-                        continue
-                    else:
-                        max_sequence_length = max(max_sequence_length, len(line) - 1)
+                    elif line.startswith('+'):
+                        state = 1
+                        max_sequence_length = max(max_sequence_length, current_sequence_length)
+                    elif state == 0:
+                        current_sequence_length += len(line) - 1
                         for char in line:
                             if char == 'A':
                                 count_a += 1

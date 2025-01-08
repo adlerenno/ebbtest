@@ -96,7 +96,7 @@ FILES = [f'indicators/{file}.{DATA_TYPE[approach]}.{approach}'
          ]
 
 # Necessary to create directories because output files of bwt construction are not named in snakemake file.
-for path in [BENCHMARK, SOURCE, SPLIT, INPUT, TEMP, OUTPUT, INDICATORS, RESULT] + [OUTPUT + approach for approach in APPROACHES_SINGLE + APPROACHES_MULTI]:
+for path in [BENCHMARK, SOURCE, SPLIT, INPUT, TEMP, OUTPUT, INDICATORS, RESULT] + [OUTPUT + approach for approach in APPROACHES]:
     os.makedirs(path, exist_ok=True)
 
 rule target:
@@ -119,6 +119,7 @@ rule get_results:
 rule stats:
     input:
         set = [f'split/{filename}.{DATA_TYPE_OF_DATA_SETS[filename]}' for filename in DATA_SETS + DATA_SETS_SPLIT]
+              + [f'split/{filename}.{DATA_TYPE_OF_DATA_SETS[filename]}_split_{r}' for filename in DATA_SETS_SPLIT for r in R_VALUES]
     output:
         stats = 'results/file_stats.csv'
     shell:
