@@ -1,6 +1,9 @@
 import os
 from itertools import chain
 
+# sudo snakemake --rerun-triggers mtime --cores 1
+# sudo snakemake --touch --cores 1
+
 MAX_MAIN_MEMORY = 128
 NUMBER_OF_PROCESSORS = 32
 
@@ -102,7 +105,8 @@ for path in [BENCHMARK, SOURCE, SPLIT, INPUT, TEMP, OUTPUT, INDICATORS, RESULT] 
 rule target:
     input:
         bench = 'results/benchmark.csv',
-        stats = 'results/file_stats.csv'
+        stats = 'results/file_stats.csv',
+        length_distribution = 'results/length_distribution_GRCh38'
 
 rule get_results:
     input:
@@ -126,6 +130,15 @@ rule stats:
         """
         python3 scripts/get_file_stats.py {output.stats} {input.set}
         """
+
+rule length_distribution:
+    input:
+        file = 'split/GRCh38.fa_split_4'
+    output:
+        length_distribution = 'results/length_distribution_GRCh38'
+    run:
+        from scripts.get_file_stats import length_distribution
+        length_distribution(output.length_distribution, input.file)
 
 
 rule clean:
