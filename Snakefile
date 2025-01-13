@@ -85,6 +85,7 @@ DATA_TYPE_OF_DATA_SETS = {
     'JAGHKL01':'fa'
 }
 R_VALUES = list(range(3, 6))
+K_VALUES = list(range(3, 8))
 
 FILES = [f'indicators/{file}.{DATA_TYPE[approach]}.{approach}'
          for approach in APPROACHES
@@ -106,7 +107,8 @@ rule target:
     input:
         bench = 'results/benchmark.csv',
         stats = 'results/file_stats.csv',
-        length_distribution = 'results/length_distribution_GRCh38.csv'
+        length_distribution = 'results/length_distribution_GRCh38.csv',
+        k_evaluation = 'results/k_benchmark.csv'
 
 rule get_results:
     input:
@@ -140,6 +142,15 @@ rule length_distribution:
         from scripts.get_file_stats import length_distribution
         length_distribution(output.length_distribution, input.file)
 
+
+rule k_benchmark:
+    input:
+        set = [f'indicators/zymowastewater.fa.{k}.ibb' for k in K_VALUES]
+    output:
+        bench = 'results/k_benchmark.csv'
+    run:
+        from scripts.collect_benchmarks import combine_k
+        combine_k(['zymowastewater'], K_VALUES, output.bench)
 
 rule clean:
     shell:
@@ -213,6 +224,23 @@ rule ibb:
     benchmark: 'bench/{filename}.ibb.csv'
     shell:
         """if {input.script} -i {input.source} -o data_bwt/ibb/{wildcards.filename} -t {params.tempdir} -k {params.k} -p {params.threads}; then 
+        echo 1 > {output.indicator}
+        else
+        echo 0 > {output.indicator}
+        fi"""
+
+rule ibb_k_test:
+    input:
+        script = 'ibb/build/IBB-cli',
+        source = 'data/{filename}'
+    output:
+        indicator='indicators/{filename}.{k}.ibb'
+    params:
+        threads=NUMBER_OF_PROCESSORS,
+        tempdir='tmp/'
+    benchmark: 'bench/{filename}.{k}.ibb.csv'
+    shell:
+        """if {input.script} -i {input.source} -o data_bwt/ibb/{wildcards.filename} -t {params.tempdir} -k {wildcards.k} -p {params.threads}; then 
         echo 1 > {output.indicator}
         else
         echo 0 > {output.indicator}
