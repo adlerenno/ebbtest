@@ -85,7 +85,7 @@ DATA_TYPE_OF_DATA_SETS = {
     'JAGHKL01':'fa'
 }
 R_VALUES = list(range(3, 6))
-K_VALUES = list(range(3, 14))
+K_VALUES = list(range(1, 20))
 
 FILES = [f'indicators/{file}.{DATA_TYPE[approach]}.{approach}'
          for approach in APPROACHES
