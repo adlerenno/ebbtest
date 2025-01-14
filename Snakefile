@@ -623,8 +623,10 @@ rule fetch_ncbi_human_GRCh38:  # https://www.ncbi.nlm.nih.gov/assembly/GCF_00000
     shell:
         """
         cd source
-        wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.26_GRCh38/GCF_000001405.26_GRCh38_genomic.fna.gz
-        gzip -df GCF_000001405.26_GRCh38_genomic.fna.gz
+        if [ ! -f GCF_000001405.26_GRCh38_genomic.fna ]; then
+            wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.26_GRCh38/GCF_000001405.26_GRCh38_genomic.fna.gz
+            gzip -df GCF_000001405.26_GRCh38_genomic.fna.gz
+        fi
         python3 ./../scripts/convert_grc_long.py GCF_000001405.26_GRCh38_genomic.fna GRCh38.fa
         """
 
@@ -634,8 +636,10 @@ rule fetch_ncbi_mouse_GRCm39:  # https://www.ncbi.nlm.nih.gov/assembly/GCF_00000
     shell:
         """
         cd source
-        wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/635/GCF_000001635.27_GRCm39/GCF_000001635.27_GRCm39_genomic.fna.gz
-        gzip -df GCF_000001635.27_GRCm39_genomic.fna.gz
+        if [ ! -f GCF_000001635.27_GRCm39_genomic.fna ]; then
+            wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/635/GCF_000001635.27_GRCm39/GCF_000001635.27_GRCm39_genomic.fna.gz
+            gzip -df GCF_000001635.27_GRCm39_genomic.fna.gz
+        fi
         python3 ./../scripts/convert_grc_long.py GCF_000001635.27_GRCm39_genomic.fna GRCm39.fa
         """
 
@@ -645,8 +649,10 @@ rule fetch_ncbi_tiar10:  # https://www.ncbi.nlm.nih.gov/assembly/GCF_000001735.4
     shell:
         """
         cd source
-        wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/735/GCF_000001735.4_TAIR10.1/GCF_000001735.4_TAIR10.1_genomic.fna.gz
-        gzip -df GCF_000001735.4_TAIR10.1_genomic.fna.gz
+        if [ ! -f GCF_000001735.4_TAIR10.1_genomic.fna ]; then
+            wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/735/GCF_000001735.4_TAIR10.1/GCF_000001735.4_TAIR10.1_genomic.fna.gz
+            gzip -df GCF_000001735.4_TAIR10.1_genomic.fna.gz
+        fi
         python3 ./../scripts/convert_grc_long.py GCF_000001735.4_TAIR10.1_genomic.fna TAIR10.fa
         """
 
@@ -656,8 +662,10 @@ rule fetch_ncbi_ecoli:  # https://www.ncbi.nlm.nih.gov/nuccore/U00096.3
     shell:
         """
         cd source
-        wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/005/845/GCA_000005845.2_ASM584v2/GCA_000005845.2_ASM584v2_genomic.fna.gz
-        gzip -df GCA_000005845.2_ASM584v2_genomic.fna.gz
+        if [ ! -f GCA_000005845.2_ASM584v2_genomic.fna ]; then
+            wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/005/845/GCA_000005845.2_ASM584v2/GCA_000005845.2_ASM584v2_genomic.fna.gz
+            gzip -df GCA_000005845.2_ASM584v2_genomic.fna.gz
+        fi
         python3 ./../scripts/convert_grc_long.py GCA_000005845.2_ASM584v2_genomic.fna ASM584.fa
         """
 
@@ -667,8 +675,10 @@ rule fetch_ncbi_bakeryeast:  # https://www.ncbi.nlm.nih.gov/assembly/GCF_0001460
     shell:
         """
         cd source
-        wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/146/045/GCF_000146045.2_R64/GCF_000146045.2_R64_genomic.fna.gz
-        gzip -df GCF_000146045.2_R64_genomic.fna.gz
+        if [ ! -f GCF_000146045.2_R64_genomic.fna ]; then
+            wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/146/045/GCF_000146045.2_R64/GCF_000146045.2_R64_genomic.fna.gz
+            gzip -df GCF_000146045.2_R64_genomic.fna.gz
+        fi
         python3 ./../scripts/convert_grc_long.py GCF_000146045.2_R64_genomic.fna R64.fa
         """
 
@@ -678,8 +688,10 @@ rule fetch_ncbi_tuberculosis:  # https://www.ncbi.nlm.nih.gov/assembly/GCF_00019
     shell:
         """
         cd source
-        wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/195/955/GCF_000195955.2_ASM19595v2/GCF_000195955.2_ASM19595v2_genomic.fna.gz
-        gzip -df GCF_000195955.2_ASM19595v2_genomic.fna.gz
+        if [ ! -f GCF_000195955.2_ASM19595v2_genomic.fna ]; then
+            wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/195/955/GCF_000195955.2_ASM19595v2/GCF_000195955.2_ASM19595v2_genomic.fna.gz
+            gzip -df GCF_000195955.2_ASM19595v2_genomic.fna.gz
+        fi
         python3 ./../scripts/convert_grc_long.py GCF_000195955.2_ASM19595v2_genomic.fna ASM19595.fa
         """
 
@@ -689,8 +701,10 @@ rule fetch_ncbi_triticum_aestivum:  # https://www.ncbi.nlm.nih.gov/datasets/geno
     shell:
         """
         cd source
-        wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/018/294/505/GCF_018294505.1_IWGSC_CS_RefSeq_v2.1/GCF_018294505.1_IWGSC_CS_RefSeq_v2.1_genomic.fna.gz
-        gzip -df GCF_018294505.1_IWGSC_CS_RefSeq_v2.1_genomic.fna.gz
+        if [ ! -f GCF_018294505.1_IWGSC_CS_RefSeq_v2.1_genomic.fna ]; then
+            wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/018/294/505/GCF_018294505.1_IWGSC_CS_RefSeq_v2.1/GCF_018294505.1_IWGSC_CS_RefSeq_v2.1_genomic.fna.gz
+            gzip -df GCF_018294505.1_IWGSC_CS_RefSeq_v2.1_genomic.fna.gz
+        fi
         python3 ./../scripts/convert_grc_long.py GCF_018294505.1_IWGSC_CS_RefSeq_v2.1_genomic.fna JAGHKL01.fa
         """
 
@@ -704,8 +718,10 @@ rule fetch_ncbi_SRR11092057:  # https://www.ncbi.nlm.nih.gov/sra/SRR11092057, ht
         # wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR110/057/SRR11092057/SRR11092057_2.fastq.gz
         """
         cd source
-        wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR110/057/SRR11092057/SRR11092057_1.fastq.gz
-        gzip -df SRR11092057_1.fastq.gz
+        if [ ! -f SRR11092057_1.fastq ]; then
+            wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR110/057/SRR11092057/SRR11092057_1.fastq.gz
+            gzip -df SRR11092057_1.fastq.gz
+        fi
         mv SRR11092057_1.fastq SRR11092057.fa
         """
 
@@ -715,8 +731,11 @@ rule fetch_ncbi_SRR062634:  # https://www.ebi.ac.uk/ena/browser/view/SRR062634
     shell:
         """
         cd source
+        
+        if [ ! -f SRR062634_1.fastq ]; then
         wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR062/SRR062634/SRR062634_1.fastq.gz
         gzip -df SRR062634_1.fastq.gz
+        fi
         mv SRR062634_1.fastq SRR062634.fa
         """
 
@@ -726,8 +745,10 @@ rule fetch_ncbi_influenza:
     shell:
         """
         cd source
-        wget https://ftp.ncbi.nih.gov/genomes/INFLUENZA/influenza.fna.gz
-        gzip -df influenza.fna.gz
+        if [ ! -f influenza.fna ]; then
+            wget https://ftp.ncbi.nih.gov/genomes/INFLUENZA/influenza.fna.gz
+            gzip -df influenza.fna.gz
+        fi
         mv influenza.fna influenza.fa
         """
 
@@ -737,8 +758,10 @@ rule fetch_ncbi_UB118CR3:
     shell :
         """
         cd source
-        wget http://ftp.sra.ebi.ac.uk/vol1/run/ERR194/ERR1942989/UB118CR3_HWN5KCCXX_L4_2.clean.fq.gz
-        gzip -df UB118CR3_HWN5KCCXX_L4_2.clean.fq.gz
+        if [ ! -f UB118CR3_HWN5KCCXX_L4_2.clean.fq ]; then
+            wget http://ftp.sra.ebi.ac.uk/vol1/run/ERR194/ERR1942989/UB118CR3_HWN5KCCXX_L4_2.clean.fq.gz
+            gzip -df UB118CR3_HWN5KCCXX_L4_2.clean.fq.gz
+        fi
         mv UB118CR3_HWN5KCCXX_L4_2.clean.fq UB118CR3.fa
         """
 
@@ -754,8 +777,10 @@ rule fetch_gage_HGChr14:
     shell :
         """
         cd source
-        wget https://gage.cbcb.umd.edu/data/Hg_chr14/Data.original/frag_1.fastq.gz
-        gzip -df frag_1.fastq.gz
+        if [ ! -f frag_1.fastq ]; then
+            wget https://gage.cbcb.umd.edu/data/Hg_chr14/Data.original/frag_1.fastq.gz
+            gzip -df frag_1.fastq.gz
+        fi
         mv frag_1.fastq HGChr14.fa
         """
 
@@ -765,8 +790,10 @@ rule fetch_pacbio_wastewater:
     shell:
         """
         cd source
-        wget https://downloads.pacbcloud.com/public/dataset/Onso/Zymo_wastewater/fastqs/Raw_influent_L01_R2_Sample_Library.fastq.gz
-        gzip -df Raw_influent_L01_R2_Sample_Library.fastq.gz
+        if [ ! -f Raw_influent_L01_R2_Sample_Library.fastq ]; then
+            wget https://downloads.pacbcloud.com/public/dataset/Onso/Zymo_wastewater/fastqs/Raw_influent_L01_R2_Sample_Library.fastq.gz
+            gzip -df Raw_influent_L01_R2_Sample_Library.fastq.gz
+        fi
         mv Raw_influent_L01_R2_Sample_Library.fastq zymowastewater.fa
         """
 
